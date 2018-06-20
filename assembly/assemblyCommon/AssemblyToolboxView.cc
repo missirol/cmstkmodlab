@@ -17,11 +17,12 @@
 #include <QVBoxLayout>
 #include <QToolBox>
 
-AssemblyToolboxView::AssemblyToolboxView(const LStepExpressMotionManager* const motion_manager, QWidget* parent) :
-  QWidget(parent),
+AssemblyToolboxView::AssemblyToolboxView(const LStepExpressMotionManager* const motion_manager, const AssemblyRedZones* const redzones, QWidget* parent)
+ : QWidget(parent)
 
-  posreg_wid_(nullptr),
-  mupite_wid_(nullptr)
+ , posreg_wid_(nullptr)
+ , mupite_wid_(nullptr)
+ , redzon_wid_(nullptr)
 {
   if(motion_manager == nullptr)
   {
@@ -59,6 +60,14 @@ AssemblyToolboxView::AssemblyToolboxView(const LStepExpressMotionManager* const 
           this       , SIGNAL(multipickup_request(const AssemblyMultiPickupTester::Configuration&)));
 
   toolbox->addItem(mupite_wid_, tr("Multi-Pickup Tester (PatRec + pick-up + put-down)"));
+  // ---------------------
+
+  //
+  // Red Zones: (X,Y,Z,A) areas forbidden to the motion-stage
+  //
+  redzon_wid_ = new AssemblyRedZonesView(redzones);
+
+  toolbox->addItem(redzon_wid_, tr("Red Zones: (X,Y,Z,A) areas forbidden to the motion-stage"));
   // ---------------------
 
   layout->addStretch(1);

@@ -57,6 +57,8 @@ AssemblyMainWindow::AssemblyMainWindow(const unsigned int camera_ID, QWidget* pa
 
   params_(nullptr),
 
+  redzones_(nullptr),
+
   // Views
   toolBar_(nullptr),
   tabWidget_(nullptr),
@@ -235,7 +237,11 @@ AssemblyMainWindow::AssemblyMainWindow(const unsigned int camera_ID, QWidget* pa
     // TOOLBOX VIEW ----------------------------------------------
     const QString tabname_Toolbox("Toolbox");
 
-    toolbox_view_ = new AssemblyToolboxView(motion_manager_, tabWidget_);
+    /// Red-Zones
+    redzones_ = new AssemblyRedZones(config->getValue<std::string>("AssemblyRedZones_file_path"));
+    /// -------------------
+
+    toolbox_view_ = new AssemblyToolboxView(motion_manager_, redzones_, tabWidget_);
     tabWidget_->addTab(toolbox_view_, tabname_Toolbox);
 
     // multi-pickup tester

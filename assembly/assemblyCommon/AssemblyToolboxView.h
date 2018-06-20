@@ -14,8 +14,9 @@
 #define ASSEMBLYTOOLBOXVIEW_H
 
 #include <LStepExpressMotionManager.h>
-#include <AssemblyMultiPickupTesterWidget.h>
 #include <AssemblyPositionsRegistryWidget.h>
+#include <AssemblyMultiPickupTesterWidget.h>
+#include <AssemblyRedZonesView.h>
 
 #include <QWidget>
 
@@ -25,7 +26,7 @@ class AssemblyToolboxView : public QWidget
 
  public:
 
-  explicit AssemblyToolboxView(const LStepExpressMotionManager* const, QWidget* parent=nullptr);
+  explicit AssemblyToolboxView(const LStepExpressMotionManager* const, const AssemblyRedZones* const, QWidget* parent=nullptr);
   virtual ~AssemblyToolboxView() {}
 
   AssemblyPositionsRegistryWidget* PositionsRegistry_Widget() { return posreg_wid_; }
@@ -35,6 +36,7 @@ class AssemblyToolboxView : public QWidget
 
   AssemblyPositionsRegistryWidget* posreg_wid_;
   AssemblyMultiPickupTesterWidget* mupite_wid_;
+  AssemblyRedZonesView*            redzon_wid_;
 
  public slots:
 

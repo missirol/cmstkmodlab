@@ -41,6 +41,7 @@ typedef AssemblyUEyeModel AssemblyUEyeModel_t;
 #include <AssemblyToolboxView.h>
 #include <AssemblyParameters.h>
 #include <AssemblyParametersView.h>
+#include <AssemblyRedZones.h>
 #include <AssemblyHardwareControlView.h>
 #include <LStepExpressModel.h>
 #include <LStepExpressMotionManager.h>
@@ -147,6 +148,8 @@ class AssemblyMainWindow : public QMainWindow
   AssemblyObjectFinderPatRecThread* finder_thread_;
 
   AssemblyParameters* params_;
+
+  AssemblyRedZones* redzones_;
 
   // Views
   QToolBar*   toolBar_;

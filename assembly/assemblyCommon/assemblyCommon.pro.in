@@ -99,6 +99,8 @@ HEADERS += AssemblyVUEyeCamera.h \
            AssemblyMultiPickupTester.h \
            AssemblyMultiPickupTesterWidget.h \
            AssemblyPositionsRegistryWidget.h \
+           AssemblyRedZones.h \
+           AssemblyRedZonesView.h \
            AssemblyToolboxView.h \
            AssemblyParameters.h \
            AssemblyParametersView.h \
@@ -158,6 +160,8 @@ SOURCES += AssemblyVUEyeCamera.cc \
            AssemblyMultiPickupTester.cc \
            AssemblyMultiPickupTesterWidget.cc \
            AssemblyPositionsRegistryWidget.cc \
+           AssemblyRedZones.cc \
+           AssemblyRedZonesView.cc \
            AssemblyToolboxView.cc \
            AssemblyParameters.cc \
            AssemblyParametersView.cc \
