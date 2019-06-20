@@ -88,34 +88,35 @@ AssemblyUEyeCamera::~AssemblyUEyeCamera()
 
 void AssemblyUEyeCamera::open()
 {
+std::cout<<__LINE__<<std::endl;//!!
     if (cameraState_==State::READY || cameraState_==State::INITIALIZING){ return; }
-
+std::cout<<__LINE__<<std::endl;//!!
     cameraState_ = State::INITIALIZING;
-
+std::cout<<__LINE__<<std::endl;//!!
     cameraHandle_ = getCameraID();
     unsigned int ret = is_InitCamera(&cameraHandle_, 0);
-
+std::cout<<__LINE__<<std::endl;//!!
     NQLog("AssemblyUEyeCamera", NQLog::Debug) << "open: is_InitCamera=" << ret;
-
+std::cout<<__LINE__<<std::endl;//!!
     CAMINFO* cameraInfo = new CAMINFO;
     if(!is_GetCameraInfo(cameraHandle_, cameraInfo))
     {
         setID(cameraInfo->ID);
         setVersion(cameraInfo->Version);
         setDate(cameraInfo->Date);
-
+std::cout<<__LINE__<<std::endl;//!!
         NQLog("AssemblyUEyeCamera", NQLog::Debug) << "open"
            << ": emitting signal \"cameraInformationChanged\"";
-
+std::cout<<__LINE__<<std::endl;//!!
         emit cameraInformationChanged();
     }
     else
     {
         NQLog("AssemblyUEyeCamera", NQLog::Fatal) << "open: cannot read camera information";
     }
-
+std::cout<<__LINE__<<std::endl;//!!
     delete cameraInfo;
-
+std::cout<<__LINE__<<std::endl;//!!
     SENSORINFO* sensorInfo = new SENSORINFO;
     if(!is_GetSensorInfo(cameraHandle_, sensorInfo))
     {
@@ -129,10 +130,10 @@ void AssemblyUEyeCamera::open()
         setBlueGain(sensorInfo->bBGain);
         setGlobalShutter(sensorInfo->bGlobShutter);
         setPixelSize(sensorInfo->wPixelSize);
-
+std::cout<<__LINE__<<std::endl;//!!
         NQLog("AssemblyUEyeCamera", NQLog::Debug) << "open: width  = " << sensorInfo->nMaxWidth;
         NQLog("AssemblyUEyeCamera", NQLog::Debug) << "open: height = " << sensorInfo->nMaxHeight;
-
+std::cout<<__LINE__<<std::endl;//!!
         int colormode = 0;
         if (sensorInfo->nColorMode >= IS_COLORMODE_BAYER)
         {
@@ -147,10 +148,10 @@ void AssemblyUEyeCamera::open()
         {
             NQLog("AssemblyUEyeCamera", NQLog::Fatal) << "open: cannot set color mode";
         }
-
+std::cout<<__LINE__<<std::endl;//!!
         NQLog("AssemblyUEyeCamera", NQLog::Debug) << "open"
            << ": emitting signal \"cameraInformationChanged\"";
-
+std::cout<<__LINE__<<std::endl;//!!
         emit cameraInformationChanged();
     }
     else
@@ -158,58 +159,59 @@ void AssemblyUEyeCamera::open()
         NQLog("AssemblyUEyeCamera", NQLog::Fatal) << "open"
            << ": cannot read sensor information";
     }
-
+std::cout<<__LINE__<<std::endl;//!!
     delete sensorInfo;
-
+std::cout<<__LINE__<<std::endl;//!!
     unsigned int uInitialParameterSet = IS_CONFIG_INITIAL_PARAMETERSET_NONE;
-
+std::cout<<__LINE__<<std::endl;//!!
     if(is_Configuration(IS_CONFIG_INITIAL_PARAMETERSET_CMD_GET, &uInitialParameterSet, sizeof(unsigned int)))
     {
         NQLog("AssemblyUEyeCamera", NQLog::Fatal) << "open: cannot read sensor initial parameter set";
     }
-
+std::cout<<__LINE__<<std::endl;//!!
     if (uInitialParameterSet == IS_CONFIG_INITIAL_PARAMETERSET_NONE) {
         ret = is_ResetToDefault(cameraHandle_);
     }
-
+std::cout<<__LINE__<<std::endl;//!!
     ZeroMemory(&cameraProps_, sizeof(cameraProps_));
-
+std::cout<<__LINE__<<std::endl;//!!
     // If the camera does not support a continuous AOI -> it uses special image formats
     cameraProps_.bUsesImageFormats = false;
     int nAOISupported = 0;
     if (is_ImageFormat(cameraHandle_, IMGFRMT_CMD_GET_ARBITRARY_AOI_SUPPORTED, (void*)&nAOISupported, sizeof(nAOISupported)) == IS_SUCCESS) {
         cameraProps_.bUsesImageFormats = (nAOISupported == 0);
     }
-
+std::cout<<__LINE__<<std::endl;//!!
     if (cameraProps_.bUsesImageFormats) {
         // search the default formats
         cameraProps_.nImgFmtNormal  = searchDefaultImageFormats(CAPTMODE_FREERUN | CAPTMODE_SINGLE);
         cameraProps_.nImgFmtDefaultNormal = cameraProps_.nImgFmtNormal;
         cameraProps_.nImgFmtTrigger = searchDefaultImageFormats(CAPTMODE_TRIGGER_SOFT_SINGLE);
         cameraProps_.nImgFmtDefaultTrigger = cameraProps_.nImgFmtTrigger;
-
+std::cout<<__LINE__<<std::endl;//!!
         // set the default formats
         if (!is_ImageFormat(cameraHandle_, IMGFRMT_CMD_SET_FORMAT, (void*)&cameraProps_.nImgFmtNormal, sizeof(cameraProps_.nImgFmtNormal))) {
             //m_nImageFormat = nFormat;
             //bRet = TRUE;
         }
     }
-
+std::cout<<__LINE__<<std::endl;//!!
     updatePixelClock();
+std::cout<<__LINE__<<std::endl;//!!
     updateExposureTime();
-
+std::cout<<__LINE__<<std::endl;//!!
     setupCapture();
-
+std::cout<<__LINE__<<std::endl;//!!
     eventThread_ = new AssemblyUEyeCameraEventThread();
     connect(eventThread_, SIGNAL(eventHappened()),
             this, SLOT(eventHappend()));
     eventThread_->start(cameraHandle_);
-
+std::cout<<__LINE__<<std::endl;//!!
     cameraState_ = State::READY;
-
+std::cout<<__LINE__<<std::endl;//!!
     NQLog("AssemblyUEyeCamera", NQLog::Debug) << "open"
        << ": emitting signal \"cameraOpened\"";
-
+std::cout<<__LINE__<<std::endl;//!!
     emit cameraOpened();
 }
 
@@ -286,69 +288,74 @@ void AssemblyUEyeCamera::updateInformation()
 void AssemblyUEyeCamera::updatePixelClock()
 {
     if (cameraState_!=State::READY && cameraState_!=State::INITIALIZING) return;
-
+std::cout<<__LINE__<<std::endl;//!!
     UINT nRange[3];
-
+std::cout<<__LINE__<<std::endl;//!!
     ZeroMemory(nRange, sizeof(nRange));
-
+std::cout<<__LINE__<<std::endl;//!!
     UINT nMin = 0;
     UINT nMax = 0;
     UINT nInc = 0;
-
+std::cout<<__LINE__<< " " << nRange << " " << &nRange << std::endl;//!!
     INT nRet = is_PixelClock(cameraHandle_, IS_PIXELCLOCK_CMD_GET_RANGE, (void*)nRange, sizeof(nRange));
-
+std::cout<<__LINE__<< " " << nRange << " " << &nRange << std::endl;//!!
     if (nRet == IS_SUCCESS) {
       nMin = nRange[0];
       nMax = nRange[1];
       nInc = nRange[2];
     }
-
+std::cout<<__LINE__<<std::endl;//!!
     NQLog("AssemblyUEyeCamera", NQLog::Debug) << "updatePixelClock"
        ": " << nMin << " " << nMax << " " << nInc;
-
+std::cout<<__LINE__<<std::endl;//!!
     if (nMin!=0) {
-
+std::cout<<__LINE__<<std::endl;//!!
         bool listChanged = false;
         bool valueChanged = false;
-
+std::cout<<__LINE__<<std::endl;//!!
         std::vector<unsigned int> newPixelClocks;
         unsigned int newPixelClock;
-
-        for (UINT f=nMin;f<=nMax;f+=nInc) newPixelClocks.push_back(f);
+std::cout<<__LINE__<<std::endl;//!!
+        for (UINT f=nMin;f<=nMax;f+=nInc)
+        {
+std::cout<<__LINE__<<" " << f << " " <<nMin<< " " << nMax<<" " <<nInc<<" " <<std::endl;//!!
+          newPixelClocks.push_back(f);
+        }
+std::cout<<__LINE__<<std::endl;//!!
         newPixelClock = readPixelClock();
-
+std::cout<<__LINE__<<std::endl;//!!
         if (newPixelClocks!=pixelClocks_) listChanged = true;
         if (newPixelClock!=currentPixelClock_) valueChanged = true;
-
+std::cout<<__LINE__<<std::endl;//!!
         pixelClocks_ = newPixelClocks;
         currentPixelClock_ = newPixelClock;
-
+std::cout<<__LINE__<<std::endl;//!!
         if (listChanged)
         {
           NQLog("AssemblyUEyeCamera", NQLog::Debug) << "updatePixelClock"
              << ": emitting signal \"pixelClockListChanged(" << newPixelClock << ")\"";
-
+std::cout<<__LINE__<<std::endl;//!!
           emit pixelClockListChanged(newPixelClock);
         }
-
+std::cout<<__LINE__<<std::endl;//!!
         if(valueChanged)
         {
           NQLog("AssemblyUEyeCamera", NQLog::Debug) << "updatePixelClock"
              << ": emitting signal \"pixelClockChanged(" << newPixelClock << ")\"";
-
+std::cout<<__LINE__<<std::endl;//!!
           emit pixelClockChanged(newPixelClock);
         }
-
+std::cout<<__LINE__<<std::endl;//!!
     } else {
-
+std::cout<<__LINE__<<std::endl;//!!
         UINT nNumberOfSupportedPixelClocks = 0;
-
+std::cout<<__LINE__<<std::endl;//!!
         INT nRet = is_PixelClock(cameraHandle_, IS_PIXELCLOCK_CMD_GET_NUMBER,
                                  (void*)&nNumberOfSupportedPixelClocks,
                                  sizeof(nNumberOfSupportedPixelClocks));
-
+std::cout<<__LINE__<<std::endl;//!!
         if ((nRet == IS_SUCCESS) && (nNumberOfSupportedPixelClocks > 0)) {
-
+std::cout<<__LINE__<<std::endl;//!!
             // No camera has more than 150 different pixel clocks.
             // Of course, the list can be allocated dynamically
 
@@ -652,12 +659,12 @@ int AssemblyUEyeCamera::getBitsPerPixel(int colormode)
 unsigned int AssemblyUEyeCamera::readPixelClock()
 {
     UINT nPixelClock;
-
+std::cout<<__LINE__<< " " << nPixelClock << " " << &nPixelClock << std::endl;//!!
     // Get current pixel clock
     INT nRet = is_PixelClock(cameraHandle_, IS_PIXELCLOCK_CMD_GET, (void*)&nPixelClock, sizeof(nPixelClock));
-
+std::cout<<__LINE__<< " " << nPixelClock << " " << &nPixelClock << std::endl;//!!
     NQLog("AssemblyUEyeCamera", NQLog::Debug) << "readPixelClock: nPixelClock=" << nPixelClock;
-
+std::cout<<__LINE__<< " " << nPixelClock << " " << &nPixelClock << std::endl;//!!
     return nPixelClock;
 }
 

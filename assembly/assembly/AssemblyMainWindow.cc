@@ -119,10 +119,11 @@ AssemblyMainWindow::AssemblyMainWindow(const QString& outputdir_path, const QStr
     camera_model_ = new AssemblyUEyeModel_t(10);
     camera_model_->updateInformation();
 
-    camera_thread_ = new AssemblyUEyeCameraThread(camera_model_, this);
-    camera_thread_->start();
+//    camera_thread_ = new AssemblyUEyeCameraThread(camera_model_, this);
+//    camera_thread_->start();
 
     camera_ = camera_model_->getCameraByID(camera_ID_);
+
     if(camera_ == nullptr)
     {
       NQLog("AssemblyMainWindow", NQLog::Critical) << "---------------------------------------------------------------------------------";
@@ -417,37 +418,48 @@ void AssemblyMainWindow::liveUpdate()
 
 void AssemblyMainWindow::enable_images()
 {
+std::cout<<__LINE__<<std::endl;//!!
+  if(camera_ == nullptr)
+  {
+    NQLog("AssemblyMainWindow", NQLog::Warning) << "enable_images"
+       << ": AssemblyVUEyeCamera was not initializaed correctly, will not create instance of AssemblyImageController";
+
+    return;
+  }
+std::cout<<__LINE__<<std::endl;//!!
   if(images_enabled_)
   {
     NQLog("AssemblyMainWindow", NQLog::Warning) << "enable_images"
        << ": images already enabled, no action taken";
-
+std::cout<<__LINE__<<std::endl;//!!
     return;
   }
-
+std::cout<<__LINE__<<std::endl;//!!
   images_enabled_ = true;
-
+std::cout<<__LINE__<<std::endl;//!!
   if(image_ctr_ == nullptr)
   {
+std::cout<<__LINE__<<std::endl;//!!
     image_ctr_ = new AssemblyImageController(camera_, zfocus_finder_);
+std::cout<<__LINE__<<std::endl;//!!
   }
-
+std::cout<<__LINE__<<std::endl;//!!
   connect(this      , SIGNAL(images_ON())      , image_ctr_, SLOT(enable()));
   connect(this      , SIGNAL(images_OFF())     , image_ctr_, SLOT(disable()));
-
+std::cout<<__LINE__<<std::endl;//!!
   connect(image_ctr_, SIGNAL(camera_enabled()) , this      , SLOT(connect_images()));
   connect(image_ctr_, SIGNAL(camera_disabled()), this      , SLOT(disconnect_images()));
-
+std::cout<<__LINE__<<std::endl;//!!
   connect(this      , SIGNAL(image_request())  , image_ctr_, SLOT(acquire_image()));
   connect(this      , SIGNAL(autofocus_ON ())  , image_ctr_, SLOT( enable_autofocus()));
   connect(this      , SIGNAL(autofocus_OFF())  , image_ctr_, SLOT(disable_autofocus()));
-
+std::cout<<__LINE__<<std::endl;//!!
   NQLog("AssemblyMainWindow", NQLog::Message) << "enable_images"
      << ": connecting AssemblyImageController";
-
+std::cout<<__LINE__<<std::endl;//!!
   NQLog("AssemblyMainWindow", NQLog::Spam) << "enable_images"
      << ": emitting signal \"images_ON\"";
-
+std::cout<<__LINE__<<std::endl;//!!
   emit images_ON();
 }
 
@@ -525,26 +537,34 @@ void AssemblyMainWindow::changeState_autofocus(const int state)
 
 void AssemblyMainWindow::get_image()
 {
-    if(image_ctr_ == nullptr)
-    {
-      NQLog("AssemblyMainWindow", NQLog::Warning) << "get_image"
-         << ": ImageController not initialized, no action taken (hint: click \"Camera ON\")";
+  if(images_enabled_)
+  {
+    NQLog("AssemblyMainWindow", NQLog::Warning) << "get_image"
+       << ": ImageController not initialized, no action taken (hint: click \"Camera ON\")";
 
-      return;
-    }
+    return;
+  }
 
-    if(image_ctr_->is_enabled() == false)
-    {
-      NQLog("AssemblyMainWindow", NQLog::Warning) << "get_image"
-         << ": ImageController not enabled, no action taken (hint: click \"Camera ON\")";
+  if(image_ctr_ == nullptr)
+  {
+    NQLog("AssemblyMainWindow", NQLog::Warning) << "get_image"
+       << ": ImageController not initialized, no action taken (hint: click \"Camera ON\")";
 
-      return;
-    }
+    return;
+  }
 
-    NQLog("AssemblyMainWindow", NQLog::Spam) << "get_image"
-       << ": emitting signal \"image_request\"";
+  if(image_ctr_->is_enabled() == false)
+  {
+    NQLog("AssemblyMainWindow", NQLog::Warning) << "get_image"
+       << ": ImageController not enabled, no action taken (hint: click \"Camera ON\")";
 
-    emit image_request();
+    return;
+  }
+
+  NQLog("AssemblyMainWindow", NQLog::Spam) << "get_image"
+     << ": emitting signal \"image_request\"";
+
+  emit image_request();
 }
 
 void AssemblyMainWindow::connect_images()
@@ -820,7 +840,7 @@ void AssemblyMainWindow::quit()
 
       emit images_OFF();
 
-      camera_ = 0;
+      camera_ = nullptr;
     }
 
     this->quit_thread(motion_thread_, "terminated LStepExpressMotionThread");

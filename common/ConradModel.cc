@@ -155,7 +155,7 @@ void ConradModel::initialize( void )
           setDeviceFullOff();
 
           NQLog("ConradModel", NQLog::Fatal) << "initialize"
-             << "failed to initialize ConradModel: empty list of device files to be checked (specified port(s): " << port_ << ")";
+             << ": failed to initialize ConradModel: empty list of device files to be checked (specified port(s): " << port_ << ")";
         }
   }
 #endif

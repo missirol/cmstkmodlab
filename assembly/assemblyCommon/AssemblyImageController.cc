@@ -58,10 +58,10 @@ AssemblyImageController::~AssemblyImageController()
 void AssemblyImageController::enable()
 {
   is_enabled_ = true;
-
+std::cout<<__LINE__<<std::endl;//!!
   NQLog("AssemblyImageController", NQLog::Spam) << "enable"
      << ": emitting signal \"open_camera\"";
-
+std::cout<<__LINE__<<std::endl;//!!
   emit open_camera();
 }
 
