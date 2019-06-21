@@ -300,9 +300,13 @@ std::cout<<__LINE__<< " " << nRange << " " << &nRange << std::endl;//!!
     INT nRet = is_PixelClock(cameraHandle_, IS_PIXELCLOCK_CMD_GET_RANGE, (void*)nRange, sizeof(nRange));
 std::cout<<__LINE__<< " " << nRange << " " << &nRange << std::endl;//!!
     if (nRet == IS_SUCCESS) {
+std::cout<<__LINE__<< " " << nRange[0] << " " << &nRange << std::endl;//!!
       nMin = nRange[0];
+std::cout<<__LINE__<< " " << nRange[1] << " " << &nRange << std::endl;//!!
       nMax = nRange[1];
+std::cout<<__LINE__<< " " << nRange[2] << " " << &nRange << std::endl;//!!
       nInc = nRange[2];
+throw;
     }
 std::cout<<__LINE__<<std::endl;//!!
     NQLog("AssemblyUEyeCamera", NQLog::Debug) << "updatePixelClock"
